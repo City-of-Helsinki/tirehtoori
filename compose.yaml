@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:14.7
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: tirehtoori
+    ports:
+      - "127.0.0.1:5555:5432"
+    volumes:
+      - tirehtoori-postgres-data-volume:/var/lib/postgresql/data
+    container_name: tirehtoori-db
+
+  django:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+      target: development
+    env_file:
+      - .docker/.env
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8000"
+    depends_on:
+      - postgres
+    container_name: tirehtoori-backend
+
+volumes:
+  tirehtoori-postgres-data-volume:
+
+networks:
+    default:
+        name: helsinki

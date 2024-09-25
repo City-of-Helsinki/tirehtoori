@@ -1,0 +1,6 @@
+-c requirements.txt
+factory_boy
+pytest
+pytest-django
+pytest-factoryboy
+ruff
