@@ -47,6 +47,11 @@ class RedirectRule(TimestampedModel):
         verbose_name="Permanent redirect",
         help_text="If checked, a 301 status code will be used instead of 302.",
     )
+    pass_query_string = models.BooleanField(
+        default=False,
+        verbose_name="Pass query string to destination URL",
+        help_text="If checked, query parameters will be passed to the destination URL. Similar to nginx's $args/$query_string.",
+    )
     case_sensitive = models.BooleanField(default=False)
 
     class Meta:
