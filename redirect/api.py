@@ -11,7 +11,12 @@ router = Router()
 def redirect(request, value: str):
     domain = get_object_or_404(Domain, name=request.get_host())
     obj = get_object_or_404(RedirectRule, path__iexact=value.strip("/"), domain=domain)
-    return django_redirect(obj.destination, permanent=obj.permanent)
+
+    destination = obj.destination
+    if obj.pass_query_string and (query_string := request.META.get("QUERY_STRING")):
+        destination += f"?{query_string}"
+
+    return django_redirect(destination, permanent=obj.permanent)
 
 
 @router.get("/")

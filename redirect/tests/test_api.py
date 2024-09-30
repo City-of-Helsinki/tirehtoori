@@ -90,3 +90,31 @@ def test_redirect_invalid_domain(client: Client, domain_factory, redirect_rule_f
     response = client.get("/foo", HTTP_HOST="404.com")
 
     assert response.status_code == 404
+
+
+@pytest.mark.parametrize("query_string", ["?param=value", "?param=value&foo=bar"])
+@pytest.mark.django_db
+def test_redirect_with_pass_query_string_should_append_query_string(
+    client: Client, domain, redirect_rule_factory, query_string
+):
+    rule = redirect_rule_factory(path="foo", domain=domain, pass_query_string=True)
+
+    response = client.get(
+        f"/foo?{query_string}",
+        HTTP_HOST=domain.name,
+    )
+
+    assert response.status_code == 302
+    assert response["Location"] == f"{rule.destination}?{query_string}"
+
+
+@pytest.mark.django_db
+def test_redirect_with_empty_query_string_should_discard_query_string(
+    client: Client, domain, redirect_rule_factory
+):
+    rule = redirect_rule_factory(path="foo", domain=domain, pass_query_string=True)
+
+    response = client.get("/foo?", HTTP_HOST=domain.name)
+
+    assert response.status_code == 302
+    assert response["Location"] == rule.destination
