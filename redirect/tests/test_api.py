@@ -118,3 +118,60 @@ def test_redirect_with_empty_query_string_should_discard_query_string(
 
     assert response.status_code == 302
     assert response["Location"] == rule.destination
+
+
+@pytest.mark.parametrize(
+    "subpath",
+    [
+        "",
+        "bar",
+        "bar/baz",
+        "bar/baz/lorem/ipsum/dolor/sit/amet/consectetur/adipiscing/elit",
+    ],
+)
+@pytest.mark.django_db
+def test_redirect_with_match_sub_paths_should_redirect_subpaths(
+    client: Client, domain, redirect_rule_factory, subpath
+):
+    rule = redirect_rule_factory(path="foo", domain=domain, match_subpaths=True)
+
+    response = client.get(f"/foo{subpath}", HTTP_HOST=domain.name)
+
+    assert response.status_code == 302
+    assert response["Location"] == rule.destination
+
+
+@pytest.mark.parametrize(
+    "subpath",
+    [
+        "",
+        "bar",
+        "bar/baz",
+        "bar/baz/lorem/ipsum/dolor/sit/amet/consectetur/adipiscing/elit",
+    ],
+)
+@pytest.mark.django_db
+def test_redirect_with_pass_sub_paths_should_append_subpath_to_destination(
+    client: Client, domain, redirect_rule_factory, subpath
+):
+    rule = redirect_rule_factory(
+        path="foo", domain=domain, match_subpaths=True, append_subpath=True
+    )
+
+    response = client.get(f"/foo/{subpath}", HTTP_HOST=domain.name)
+
+    assert response.status_code == 302
+    assert response["Location"] == f"{rule.destination}{subpath}"
+
+
+@pytest.mark.django_db
+def test_redirect_with_exact_match_takes_precedence_over_subpaths(
+    client: Client, domain, redirect_rule_factory
+):
+    exact_rule = redirect_rule_factory(path="foo/bar", domain=domain)
+    redirect_rule_factory(path="foo", domain=domain, match_subpaths=True)
+
+    response = client.get("/foo/bar", HTTP_HOST=domain.name)
+
+    assert response.status_code == 302
+    assert response["Location"] == exact_rule.destination
