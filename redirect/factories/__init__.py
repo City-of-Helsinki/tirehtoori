@@ -1,7 +1,7 @@
 import factory
 from pytest_factoryboy import register
 
-from redirect.models import RedirectRule, Domain
+from redirect.models import Domain, RedirectRule
 
 
 @register

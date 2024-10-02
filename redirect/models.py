@@ -14,7 +14,8 @@ class Domain(TimestampedModel):
         max_length=255,
         unique=True,
         verbose_name="Domain name",
-        help_text="The domain name to redirect from. Do not include the protocol or path.",
+        help_text="The domain name to redirect from. Do not include the protocol or "
+        "path.",
     )
 
     def __str__(self):
@@ -32,7 +33,8 @@ class RedirectRule(TimestampedModel):
     path = models.CharField(
         max_length=1000,
         verbose_name="Path",
-        help_text="The path to redirect from. Leading and trailing slashes will be stripped on save.",
+        help_text="The path to redirect from. Leading and trailing slashes will be "
+        "stripped on save.",
         db_index=True,
     )
     destination = models.URLField(

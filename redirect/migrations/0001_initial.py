@@ -5,40 +5,100 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Domain',
+            name="Domain",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(help_text='The domain name to redirect from. Do not include the protocol or path.', max_length=255, unique=True, verbose_name='Domain name')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="The domain name to redirect from. Do not include "
+                        "the protocol or path.",
+                        max_length=255,
+                        unique=True,
+                        verbose_name="Domain name",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='RedirectRule',
+            name="RedirectRule",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('path', models.CharField(db_index=True, help_text='The path to redirect from. Leading and trailing slashes will be stripped on save.', max_length=1000, verbose_name='Path')),
-                ('destination', models.URLField(help_text='The URL to redirect to.', max_length=1000, verbose_name='Destination URL')),
-                ('permanent', models.BooleanField(default=False, help_text='If checked, a 301 status code will be used instead of 302.', verbose_name='Permanent redirect')),
-                ('case_sensitive', models.BooleanField(default=False)),
-                ('domain', models.ForeignKey(help_text='The domain to redirect from.', on_delete=django.db.models.deletion.CASCADE, related_name='redirect_rules', to='redirect.domain', verbose_name='Domain')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "path",
+                    models.CharField(
+                        db_index=True,
+                        help_text="The path to redirect from. Leading and trailing "
+                        "slashes will be stripped on save.",
+                        max_length=1000,
+                        verbose_name="Path",
+                    ),
+                ),
+                (
+                    "destination",
+                    models.URLField(
+                        help_text="The URL to redirect to.",
+                        max_length=1000,
+                        verbose_name="Destination URL",
+                    ),
+                ),
+                (
+                    "permanent",
+                    models.BooleanField(
+                        default=False,
+                        help_text="If checked, a 301 status code will be used instead "
+                        "of 302.",
+                        verbose_name="Permanent redirect",
+                    ),
+                ),
+                ("case_sensitive", models.BooleanField(default=False)),
+                (
+                    "domain",
+                    models.ForeignKey(
+                        help_text="The domain to redirect from.",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="redirect_rules",
+                        to="redirect.domain",
+                        verbose_name="Domain",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('path',),
-                'constraints': [models.UniqueConstraint(fields=('domain', 'path'), name='unique_domain_path')],
+                "ordering": ("path",),
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("domain", "path"), name="unique_domain_path"
+                    )
+                ],
             },
         ),
     ]

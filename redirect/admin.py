@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import RedirectRule, Domain
+from .models import Domain, RedirectRule
 
 
 class CommonPathPrefixListFilter(admin.SimpleListFilter):
