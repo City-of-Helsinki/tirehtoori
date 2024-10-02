@@ -1,4 +1,5 @@
 import pytest
+
 from redirect.models import RedirectRule
 
 

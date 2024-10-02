@@ -1,2 +1,13 @@
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "tirehtoori.test_settings"
+
+[tool.ruff]
+lint.select = [
+    # Pyflakes
+    "F",
+    # Pycodestyle
+    "E",
+    "W",
+    # isort
+    "I001"
+]

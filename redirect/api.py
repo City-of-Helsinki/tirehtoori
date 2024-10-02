@@ -1,7 +1,8 @@
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect as django_redirect
 from ninja import Router
-from django.shortcuts import redirect as django_redirect, get_object_or_404
 
-from redirect.models import RedirectRule, Domain
+from redirect.models import Domain, RedirectRule
 
 router = Router()
 
