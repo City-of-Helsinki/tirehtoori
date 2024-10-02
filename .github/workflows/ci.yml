@@ -1,0 +1,82 @@
+name: Continuous integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  commitlint:
+    name: Commitlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check commitlint
+        uses: wagoid/commitlint-github-action@v6
+
+  ruff-check:
+    name: Ruff check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: chartboost/ruff-action@v1
+        with:
+          args: 'check'
+
+  ruff-format:
+    name: Ruff format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: chartboost/ruff-action@v1
+        with:
+          args: 'format --check'
+
+  test:
+    name: Tests
+    needs: [commitlint, ruff-check, ruff-format]
+    runs-on: ubuntu-latest
+
+    env:
+      SECRET_KEY: topsecret123
+      DATABASE_URL: postgres://tirehtoori:tirehtoori@localhost:5432/tirehtoori
+      PYTHON_VERSION: 3.11
+
+    services:
+      postgres:
+        image: postgres:14.7
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_USER: tirehtoori
+          POSTGRES_PASSWORD: tirehtoori
+          POSTGRES_DB: tirehtoori
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements.txt -r requirements-dev.txt codecov pytest-cov
+
+      - name: Check migrations
+        run: |
+          python manage.py makemigrations --dry-run --check
+
+      - name: Run tests
+        run: pytest -ra -vv --doctest-modules --cov=.
+
+      - name: Coverage
+        run: codecov
