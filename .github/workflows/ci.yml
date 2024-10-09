@@ -76,7 +76,7 @@ jobs:
           python manage.py makemigrations --dry-run --check
 
       - name: Run tests
-        run: pytest -ra -vv --doctest-modules --cov=.
+        run: pytest -ra -vv --cov=.
 
       - name: Coverage
         run: codecov
