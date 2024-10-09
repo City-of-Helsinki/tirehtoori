@@ -1,0 +1,60 @@
+foo: bar
+data:
+  server.conf: |-
+    server {
+        listen       8080;
+        listen       [::]:8080;
+        server_name  www.foo.test foo.test;
+        root         /foo/bar/baz;
+
+        location ~* ^/foo/bar/baz(.*)${DOLLAR} {
+          return 404;
+        }
+
+        location ~* ^/foo/proxy/simple(.*) {
+            proxy_pass http://localhost:1234/${DOLLAR}1${DOLLAR}is_args${DOLLAR}args;
+        }
+
+        location ~* ^/foo/rewrite/google {
+            rewrite /foo/rewrite/google(.*) https://google.com/${DOLLAR}1 redirect;
+        }
+
+        location ~* ^/foo/rewrite/google_with_args {
+            rewrite /foo/rewrite/google_with_args(.*) https://google.com/${DOLLAR}1${DOLLAR}is_args${DOLLAR}args;
+        }
+
+        location ~* ^/foo/rewrite/google_no_args {
+            rewrite /foo/rewrite/google_no_args(.*) https://google.com/${DOLLAR}1?;
+        }
+
+        location ~* ^/foo/return/google${DOLLAR} {
+            return 301 https://google.com;
+        }
+
+        location ~* ^/foo/return/google_with_args(.*)?${DOLLAR} {
+            return 301 https://google.com/?${DOLLAR}args;
+        }
+
+        location ~* ^/foo/return/different_wildcard(/.*)?${DOLLAR} {
+            return 301 https://google.com/?${DOLLAR}args;
+        }
+
+        location ~ ^/foo/return/Google_Case_Sensitive${DOLLAR} {
+            return 301 https://google.com;
+        }
+
+        location ~* ^/foo/multiple_lines${DOLLAR} {
+            rewrite /foo/multiple_lines/bar(.*) https://google.com;
+            return 301 https://google.com;
+        }
+
+        error_page 404 /404.html;
+    }
+    server {
+        listen       8080;
+        listen       [::]:8080;
+        server_name  redirect-to-foo.test;
+        root         /foo/bar/baz;
+
+        return 301 https://www.foo.test;
+    }
