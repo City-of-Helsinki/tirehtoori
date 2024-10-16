@@ -20,6 +20,8 @@ env = environ.Env(
     DATABASE_PASSWORD=(str, ""),
     DJANGO_LOG_LEVEL=(str, "INFO"),
     DEBUG=(bool, False),
+    ENABLE_REDIRECT_APP=(bool, False),
+    ENABLE_ADMIN_APP=(bool, False),
     SECRET_KEY=(str, ""),
     SENTRY_DSN=(str, ""),
     SENTRY_ENVIRONMENT=(str, "development"),
@@ -73,6 +75,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 ]
+
+if not env("ENABLE_ADMIN_APP"):
+    INSTALLED_APPS.pop(INSTALLED_APPS.index("django.contrib.admin"))
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -154,3 +159,9 @@ STATIC_URL = env("STATIC_URL")
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Enable Django Admin site
+ENABLE_ADMIN_APP = env("ENABLE_ADMIN_APP")
+
+# Enable API
+ENABLE_REDIRECT_APP = env("ENABLE_REDIRECT_APP")
