@@ -48,8 +48,8 @@ class TestRedirectRule:
         assert rule.path == ""
 
     def test_unique_together(self, domain_factory):
-        domain = domain_factory(name="foo.com")
-        other_domain = domain_factory(name="bar.com")
+        domain = domain_factory(display_name="foo.com")
+        other_domain = domain_factory(display_name="bar.com")
 
         # These should be fine
         RedirectRule.objects.create(

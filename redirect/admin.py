@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Domain, RedirectRule
+from .models import Domain, DomainName, RedirectRule
 
 
 class CommonPathPrefixListFilter(admin.SimpleListFilter):
@@ -58,9 +58,26 @@ class RedirectRuleAdmin(admin.ModelAdmin):
     )
 
 
+class DomainNameInline(admin.TabularInline):
+    model = DomainName
+    extra = 1
+
+
+@admin.display(description="Domain names")
+def domain_names(self):
+    return ", ".join(self.names.values_list("name", flat=True))
+
+
 @admin.register(Domain)
 class DomainAdmin(admin.ModelAdmin):
-    list_display = ("name",)
-    search_fields = ("name",)
-    ordering = ("name",)
+    inlines = [DomainNameInline]
+    list_display = (
+        "display_name",
+        domain_names,
+    )
+    search_fields = ("display_name", "names__name")
+    ordering = ("display_name",)
     readonly_fields = ("created_at", "updated_at")
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related("names")

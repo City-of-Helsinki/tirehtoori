@@ -11,12 +11,31 @@ class TimestampedModel(models.Model):
 
 
 class Domain(TimestampedModel):
+    display_name = models.CharField(
+        max_length=255,
+        unique=True,
+        verbose_name="Display name",
+        help_text="Display name for the domain. For informational purposes only.",
+    )
+
+    def __str__(self):
+        domain_names = self.names.values_list("name", flat=True)
+        return f"{self.display_name} ({', '.join(domain_names)})"
+
+
+class DomainName(TimestampedModel):
     name = models.CharField(
         max_length=255,
         unique=True,
         verbose_name="Domain name",
-        help_text="The domain name to redirect from. Do not include the protocol or "
-        "path.",
+        help_text="The domain name to redirect from. Do not include the protocol "
+        'or path. E.g. "example.com"',
+    )
+    domain = models.ForeignKey(
+        Domain,
+        on_delete=models.CASCADE,
+        related_name="names",
+        verbose_name="Domain",
     )
 
     def __str__(self):
@@ -114,4 +133,4 @@ class RedirectRule(TimestampedModel):
         return super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.domain.name}/{self.path} -> {self.destination}"
+        return f"{self.domain.display_name}/{self.path} -> {self.destination}"

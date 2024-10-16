@@ -12,7 +12,7 @@ router = Router()
 
 @router.get("/{path:path}")
 def redirect(request, path: str):
-    domain = get_object_or_404(Domain, name=request.get_host())
+    domain = get_object_or_404(Domain, names__name=request.get_host())
     try:
         redirect_rule = get_object_or_404(
             RedirectRule, path__iexact=path.strip("/"), domain=domain
