@@ -1,7 +1,19 @@
 import factory
+from faker import Faker
+from faker.proxy import UniqueProxy
 from pytest_factoryboy import register
 
 from redirect.models import Domain, DomainName, RedirectRule
+
+
+# As suggested in:
+# https://github.com/FactoryBoy/factory_boy/issues/305#issuecomment-986154884
+class UniqueFaker(factory.Faker):
+    def evaluate(self, instance, step, extra):
+        locale = extra.pop("locale")
+        subfaker: Faker = self._get_faker(locale)
+        unique_proxy: UniqueProxy = subfaker.unique
+        return unique_proxy.format(self.provider, **extra)
 
 
 @register
@@ -9,7 +21,7 @@ class DomainNameFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = DomainName
 
-    name = factory.Faker("domain_name")
+    name = UniqueFaker("domain_name")
 
 
 @register
@@ -17,7 +29,7 @@ class DomainFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Domain
 
-    display_name = factory.Faker("domain_name")
+    display_name = UniqueFaker("domain_name")
 
     @factory.post_generation
     def names(self, create, extracted, **__):
@@ -41,6 +53,7 @@ class RedirectRuleFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = RedirectRule
 
-    path = factory.Faker("uri_path")
+    # Not strictly unique, but needs to be unique with domain
+    path = UniqueFaker("uri_path")
     destination = factory.Faker("url")
     domain = factory.SubFactory(DomainFactory)
