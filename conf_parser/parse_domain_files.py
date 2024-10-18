@@ -37,12 +37,60 @@ class ConfigProcessor:
         "return": "_process_return",
     }
 
-    def __init__(self, filename=None):
+    def __init__(self, filename=None, conf_file_path=None):
         self.rules = []
         self.domain_names = None
         self.warnings = []
         # File name is for informative purposes only
         self.filename = filename
+        self.conf_file_path = conf_file_path
+        self.server_conf = None
+        if self.conf_file_path:
+            with open(self.conf_file_path, "r") as f:
+                self.server_conf = f.read().splitlines()
+
+    def _get_block_from_server_conf(self, directive):
+        if self.server_conf is None:
+            return None
+
+        if "line" not in directive:
+            return None
+
+        block_start = directive["line"] - 1
+        if "block" not in directive:
+            return {
+                "start": block_start,
+                "end": block_start,
+                "lines": self.server_conf[block_start],
+            }
+
+        block_count = 0
+        for i, line in enumerate(self.server_conf[block_start:]):
+            block_count += line.count("{")
+            block_count -= line.count("}")
+            if block_count == 0:
+                return {
+                    "start": block_start + 1,
+                    "end": block_start + 1 + i,
+                    "lines": self.server_conf[block_start : block_start + i + 1],
+                }
+
+        raise ParseError("Block not closed")
+
+    def _generate_notes_from_block_dict(self, block: dict):
+        if block is None:
+            return ""
+
+        joined_lines = "\n".join(block["lines"])
+        return (
+            f"Parsed automatically from {self.filename}\n"
+            f"Block from line {block['start']} to {block['end']}:"
+            f"\n{joined_lines}"
+        )
+
+    def _generate_notes_from_directive(self, directive):
+        block = self._get_block_from_server_conf(directive)
+        return self._generate_notes_from_block_dict(block)
 
     def _parse_uri(self, uri: str):
         if not uri.startswith("^") and uri.endswith("$"):
@@ -152,6 +200,7 @@ class ConfigProcessor:
             "path": parsed_uri["uri"],
             "raw_path": path,
             "match_subpaths": parsed_uri["match_subpaths"],
+            "notes": self._generate_notes_from_directive(directive),
         }
 
         for location_directive in directive["block"]:
@@ -216,6 +265,9 @@ class ConfigProcessor:
             # a query string in the replacement
             "pass_query_string": parsed_replacement["pass_query_string"]
             or not replacement.endswith("?"),
+            "notes": parent["notes"]
+            if parent
+            else self._generate_notes_from_directive(directive),
         }
         if INCLUDE_DEBUG_DATA:
             rule = {
@@ -277,6 +329,9 @@ class ConfigProcessor:
             "match_subpaths": parent["match_subpaths"],
             "append_subpath": parsed_uri["append_subpath"],
             "pass_query_string": parsed_uri["pass_query_string"],
+            "notes": parent["notes"]
+            if parent
+            else self._generate_notes_from_directive(directive),
         }
         if INCLUDE_DEBUG_DATA:
             rule = {
@@ -320,6 +375,7 @@ class ConfigProcessor:
             "domain_names": self.domain_names,
             "rules": self.rules,
             "warnings": self.warnings,
+            "notes": f"Parsed automatically from {self.filename}",
         }
 
 
@@ -339,7 +395,7 @@ def process(file_path):
     server_conf_from_yaml = server_conf_from_yaml.replace("${DOLLAR}", "$")
 
     # crossplane parses only files, so we need to write the content to a file.
-    with open(f"{TEMP_CONF_DIR}/{filename}", "w") as f:
+    with open(conf_file_path := f"{TEMP_CONF_DIR}/{filename}", "w") as f:
         # Add a dummy http block to make crossplane happy
         f.write(f"http {{{server_conf_from_yaml}}}")
 
@@ -357,7 +413,9 @@ def process(file_path):
     for server_block in server_blocks:
         # Sanity check
         assert server_block["directive"] == "server"
-        config_processor = ConfigProcessor(filename=filename)
+        config_processor = ConfigProcessor(
+            filename=filename, conf_file_path=conf_file_path
+        )
         for directive in server_block["block"]:
             config_processor.process_directive(directive)
         output.append(config_processor.to_json())
