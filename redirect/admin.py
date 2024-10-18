@@ -55,6 +55,7 @@ class RedirectRuleAdmin(admin.ModelAdmin):
             },
         ),
         ("Timestamps", {"fields": ("created_at", "updated_at")}),
+        ("Notes", {"fields": ("notes",)}),
     )
 
 

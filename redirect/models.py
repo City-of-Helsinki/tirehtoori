@@ -17,6 +17,11 @@ class Domain(TimestampedModel):
         verbose_name="Display name",
         help_text="Display name for the domain. For informational purposes only.",
     )
+    notes = models.TextField(
+        blank=True,
+        verbose_name="Notes",
+        help_text="Additional notes about the domain.",
+    )
 
     def __str__(self):
         domain_names = self.names.values_list("name", flat=True)
@@ -88,6 +93,11 @@ class RedirectRule(TimestampedModel):
         'Does nothing if "Match subpaths" is not checked.',
     )
     case_sensitive = models.BooleanField(default=False)
+    notes = models.TextField(
+        blank=True,
+        verbose_name="Notes",
+        help_text="Additional notes about the redirect rule.",
+    )
 
     class Meta:
         ordering = ("path",)
