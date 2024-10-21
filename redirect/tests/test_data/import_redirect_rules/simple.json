@@ -1,0 +1,16 @@
+[
+  {
+    "domain_names": [
+      "simple.test",
+      "www.simple.test"
+    ],
+    "rules": [
+      {
+        "path": "/foo",
+        "destination": "https://www.simple.test/bar/",
+        "notes": "Something important"
+      }
+    ],
+    "notes": "Simple and clean"
+  }
+]

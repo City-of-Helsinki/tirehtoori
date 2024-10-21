@@ -1,0 +1,29 @@
+[
+  {
+    "domain_names": ["domain1.test"],
+    "rules": [
+      {
+        "path": "/foo",
+        "destination": "https://www.foo.test/"
+      }
+    ]
+  },
+    {
+    "domain_names": ["domain2.test"],
+    "rules": [
+      {
+        "path": "/foo",
+        "destination": "https://www.foo.test/"
+      }
+    ]
+  },
+  {
+    "domain_names": [],
+    "rules": [
+      {
+        "path": "/foo",
+        "destination": "https://www.foo.test/"
+      }
+    ]
+  }
+]
