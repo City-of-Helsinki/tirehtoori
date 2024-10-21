@@ -1,0 +1,59 @@
+[
+  {
+    "domain_names": [
+      "domain1.test",
+      "www.domain2.test"
+    ],
+    "rules": [
+      {
+        "path": "/foo",
+        "destination": "https://redirect.test/foo/",
+        "notes": "foo",
+        "permanent": false,
+        "match_subpaths": false,
+        "append_subpath": false,
+        "pass_query_string": false,
+        "case_sensitive": false
+      },
+      {
+        "path": "/bar",
+        "destination": "https://redirect.test/bar/",
+        "notes": "bar",
+        "permanent": true,
+        "match_subpaths": true,
+        "append_subpath": true,
+        "pass_query_string": true,
+        "case_sensitive": true
+      }
+    ],
+    "notes": "first domain"
+  },
+  {
+    "domain_names": [
+      "domain2.test"
+    ],
+    "rules": [
+      {
+        "path": "/foo",
+        "destination": "https://redirect.test/foo/",
+        "notes": "foo",
+        "permanent": false,
+        "match_subpaths": false,
+        "append_subpath": false,
+        "pass_query_string": false,
+        "case_sensitive": false
+      },
+      {
+        "path": "/bar",
+        "destination": "https://redirect.test/bar/",
+        "notes": "bar",
+        "permanent": true,
+        "match_subpaths": true,
+        "append_subpath": true,
+        "pass_query_string": true,
+        "case_sensitive": true
+      }
+    ],
+    "notes": "second domain"
+  }
+]
