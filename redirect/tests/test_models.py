@@ -123,3 +123,132 @@ class TestRedirectRule:
 
         rule.path = "/foo/bar"
         rule.save()
+
+    @pytest.mark.parametrize(
+        "paths",
+        [
+            ("/foo", "/FOO"),
+            ("/FOO", "/foo"),
+            ("/foo", "/foo"),
+            ("/FOO", "/FOO"),
+            ("/foo/bar", "/foo/BAR"),
+        ],
+    )
+    @pytest.mark.parametrize("case_sensitive", [(True, False), (False, True)])
+    def test_path_conflicts_with_differing_case_sensitivity(
+        self, domain, paths, case_sensitive, redirect_rule_factory
+    ):
+        existing_path, conflicting_path = paths
+        existing_case_sensitive, conflicting_case_sensitive = case_sensitive
+
+        redirect_rule_factory(
+            path=existing_path,
+            domain=domain,
+            case_sensitive=existing_case_sensitive,
+        )
+
+        with pytest.raises(ValidationError):
+            redirect_rule_factory(
+                path=conflicting_path,
+                domain=domain,
+                case_sensitive=conflicting_case_sensitive,
+            )
+
+    @pytest.mark.parametrize(
+        "paths",
+        [
+            ("/FOO", "/FOO"),
+            ("/foo", "/foo"),
+            ("/foo/BAR", "/foo/BAR"),
+        ],
+    )
+    def test_path_conflicts_both_case_sensitive(
+        self, domain, paths, redirect_rule_factory
+    ):
+        existing_path, conflicting_path = paths
+
+        redirect_rule_factory(
+            path=existing_path,
+            domain=domain,
+            case_sensitive=True,
+        )
+
+        with pytest.raises(ValidationError):
+            redirect_rule_factory(
+                path=conflicting_path,
+                domain=domain,
+                case_sensitive=True,
+            )
+
+    def test_can_create_case_sensitive_paths_with_same_characters_different_casing(
+        self, domain
+    ):
+        RedirectRule.objects.create(
+            domain=domain,
+            path="/foo",
+            destination=self.DEFAULT_DESTINATION,
+            case_sensitive=True,
+        )
+        RedirectRule.objects.create(
+            domain=domain,
+            path="/FOO",
+            destination=self.DEFAULT_DESTINATION,
+            case_sensitive=True,
+        )
+        # No error, this passes!
+
+    def test_cannot_create_case_insensitive_paths_with_same_characters_different_casing(
+        self, domain
+    ):
+        RedirectRule.objects.create(
+            domain=domain,
+            path="/foo",
+            destination=self.DEFAULT_DESTINATION,
+            case_sensitive=False,
+        )
+        with pytest.raises(ValidationError):
+            RedirectRule.objects.create(
+                domain=domain,
+                path="/FOO",
+                destination=self.DEFAULT_DESTINATION,
+                case_sensitive=False,
+            )
+
+    def test_can_create_same_case_sensitive_paths_on_different_domains(
+        self, domain_factory
+    ):
+        domain = domain_factory(display_name="foo.test")
+        other_domain = domain_factory(display_name="bar.test")
+
+        RedirectRule.objects.create(
+            domain=domain,
+            path="/FOO",
+            destination=self.DEFAULT_DESTINATION,
+            case_sensitive=True,
+        )
+        RedirectRule.objects.create(
+            domain=other_domain,
+            path="/FOO",
+            destination=self.DEFAULT_DESTINATION,
+            case_sensitive=True,
+        )
+        # No error, this passes!
+
+    def test_should_validate_case_sensitivity_on_case_sensitive_switch(
+        self, domain, redirect_rule_factory
+    ):
+        rule = redirect_rule_factory(
+            path="/foo",
+            domain=domain,
+            case_sensitive=True,
+        )
+        redirect_rule_factory(
+            path="/FOO",
+            domain=domain,
+            case_sensitive=True,
+        )
+
+        rule.case_sensitive = False
+
+        with pytest.raises(ValidationError):
+            rule.save()

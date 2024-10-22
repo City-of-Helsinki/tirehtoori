@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 
 
 class TimestampedModel(models.Model):
@@ -107,6 +108,35 @@ class RedirectRule(TimestampedModel):
             )
         ]
 
+    def _validate_case_sensitive_path(self):
+        """
+        Check for case-sensitive conflicts with existing rules.
+        """
+        conflicting_rules = RedirectRule.objects.filter(
+            # Compare against case-sensitive rules
+            Q(domain=self.domain, path=self.path, case_sensitive=True)
+            # Compare against case-insensitive rules
+            | Q(domain=self.domain, path__iexact=self.path, case_sensitive=False)
+        ).exclude(pk=self.pk)
+        if conflicting_rules.exists():
+            raise ValidationError(
+                f"Path {self.path} conflicts with existing rule(s): "
+                f"{', '.join(rule.path for rule in conflicting_rules)}"
+            )
+
+    def _validate_case_insensitive_path(self):
+        """
+        Check for case-insensitive conflicts with existing rules.
+        """
+        conflicting_rules = RedirectRule.objects.filter(
+            domain=self.domain, path__iexact=self.path
+        ).exclude(pk=self.pk)
+        if conflicting_rules.exists():
+            raise ValidationError(
+                f"Path {self.path} conflicts with existing rule(s): "
+                f"{', '.join(rule.path for rule in conflicting_rules)}"
+            )
+
     def _validate_match_subpaths(self):
         """
         Check for conflicts with existing wildcard rules; a path cannot be a subpath of
@@ -134,6 +164,11 @@ class RedirectRule(TimestampedModel):
     def clean(self):
         # Normalize path.
         self.path = self.path.strip().strip("/")
+
+        if self.case_sensitive:
+            self._validate_case_sensitive_path()
+        else:
+            self._validate_case_insensitive_path()
 
         if self.match_subpaths:
             self._validate_match_subpaths()
