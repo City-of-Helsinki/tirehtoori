@@ -47,10 +47,22 @@ def test_find_wildcard_rule_exact_match(domain, redirect_rule_factory):
     assert result == expected_rule
 
 
+@pytest.mark.parametrize(
+    "rule_path, find_path",
+    [
+        ("foo", "bar"),
+        ("fooooooo", "foo"),
+        ("foo", "fooooooo"),
+        ("foo", "fooooooo/bar"),
+        ("foo/foo", "foo"),
+    ],
+)
 @pytest.mark.django_db
-def test_find_wildcard_rule_no_match(domain, redirect_rule_factory):
-    redirect_rule_factory(path="/wildcard", domain=domain, match_subpaths=True)
-    result = find_wildcard_rule(domain, "no-match/path")
+def test_find_wildcard_rule_no_match(
+    rule_path, find_path, domain, redirect_rule_factory
+):
+    redirect_rule_factory(path=rule_path, domain=domain, match_subpaths=True)
+    result = find_wildcard_rule(domain, find_path)
     assert result is None
 
 
@@ -60,6 +72,16 @@ def test_find_wildcard_rule_case_insensitive_match(domain, redirect_rule_factory
         path="/wildcard", domain=domain, match_subpaths=True
     )
     result = find_wildcard_rule(domain, "WILDCARD/path")
+    assert result == expected_rule
+
+
+@pytest.mark.parametrize("path", ["", "myon", "myon/myon/myon/myon/myon/myon"])
+@pytest.mark.django_db
+def test_find_wildcard_rule_case_empty_wildcard_path(
+    path, domain, redirect_rule_factory
+):
+    expected_rule = redirect_rule_factory(path="/", domain=domain, match_subpaths=True)
+    result = find_wildcard_rule(domain, path)
     assert result == expected_rule
 
 
@@ -208,7 +230,7 @@ class TestRedirectView:
     ):
         rule = redirect_rule_factory(path="foo", domain=domain, match_subpaths=True)
 
-        response = domain_client.get(f"/foo{subpath}")
+        response = domain_client.get(f"/foo/{subpath}")
 
         assert response.status_code == 302
         assert response["Location"] == rule.destination
