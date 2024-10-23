@@ -30,13 +30,21 @@ def get_domain_rule_or_404(domain, path) -> RedirectRule:
 
 def find_wildcard_rule(domain, path) -> RedirectRule | None:
     cleaned_path = path.strip("/")
+    split_cleaned_path = cleaned_path.split("/") if cleaned_path else []
+
     wildcard_redirects = RedirectRule.objects.filter(domain=domain, match_subpaths=True)
     for wildcard_rule in wildcard_redirects:
-        if wildcard_rule.case_sensitive and cleaned_path.startswith(wildcard_rule.path):
-            return wildcard_rule
-        if not wildcard_rule.case_sensitive and cleaned_path.lower().startswith(
-            wildcard_rule.path.lower()
-        ):
+        split_wildcard_path = (
+            wildcard_rule.path.split("/") if wildcard_rule.path else []
+        )
+        if len(split_wildcard_path) > len(split_cleaned_path):
+            continue
+
+        if not wildcard_rule.case_sensitive:
+            split_cleaned_path = [part.lower() for part in split_cleaned_path]
+            split_wildcard_path = [part.lower() for part in split_wildcard_path]
+
+        if split_cleaned_path[: len(split_wildcard_path)] == split_wildcard_path:
             return wildcard_rule
 
     return None
