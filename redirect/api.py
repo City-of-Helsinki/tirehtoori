@@ -10,23 +10,47 @@ from redirect.models import Domain, RedirectRule
 router = Router()
 
 
+def get_domain_rule_or_404(domain, path) -> RedirectRule:
+    """Get a redirect rule for a domain or raise Http404 if not found."""
+    try:
+        # Try to find an exact match first
+        redirect_rule = RedirectRule.objects.get(
+            path=path.strip("/"), domain=domain, case_sensitive=True
+        )
+    except RedirectRule.DoesNotExist:
+        # If no exact match is found, try a case-insensitive match
+        redirect_rule = get_object_or_404(
+            RedirectRule,
+            path__iexact=path.strip("/"),
+            domain=domain,
+            case_sensitive=False,
+        )
+    return redirect_rule
+
+
+def find_wildcard_rule(domain, path) -> RedirectRule | None:
+    cleaned_path = path.strip("/")
+    wildcard_redirects = RedirectRule.objects.filter(domain=domain, match_subpaths=True)
+    for wildcard_rule in wildcard_redirects:
+        if wildcard_rule.case_sensitive and cleaned_path.startswith(wildcard_rule.path):
+            return wildcard_rule
+        if not wildcard_rule.case_sensitive and cleaned_path.lower().startswith(
+            wildcard_rule.path.lower()
+        ):
+            return wildcard_rule
+
+    return None
+
+
 @router.get("/{path:path}")
 def redirect(request, path: str):
     domain = get_object_or_404(Domain, names__name=request.get_host())
     try:
-        redirect_rule = get_object_or_404(
-            RedirectRule, path__iexact=path.strip("/"), domain=domain
-        )
+        redirect_rule = get_domain_rule_or_404(domain, path)
     except Http404:
-        wildcard_redirects = RedirectRule.objects.filter(
-            domain=domain, match_subpaths=True
-        )
-        for wildcard_rule in wildcard_redirects:
-            if path.startswith(wildcard_rule.path):
-                redirect_rule = wildcard_rule
-                break
-        else:
-            # No wildcard rule matched, raise 404
+        redirect_rule = find_wildcard_rule(domain, path)
+        if redirect_rule is None:
+            # No rule found at all, raise 404
             raise
 
     destination = redirect_rule.destination

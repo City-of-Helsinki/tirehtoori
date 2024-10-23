@@ -1,5 +1,8 @@
 import pytest
+from django.http import Http404
 from django.test import Client
+
+from redirect.api import find_wildcard_rule, get_domain_rule_or_404
 
 
 @pytest.fixture
@@ -10,6 +13,64 @@ def domain_client(client, domain):
     """
     client.defaults["HTTP_HOST"] = domain.names.first().name
     return client
+
+
+@pytest.mark.django_db
+def test_domain_rule_exact_match(domain, redirect_rule_factory):
+    expected_rule = redirect_rule_factory(
+        path="TEST", domain=domain, case_sensitive=True
+    )
+    redirect_rule_factory(path="test", domain=domain, case_sensitive=True)
+    result = get_domain_rule_or_404(domain, "/TEST")
+    assert result == expected_rule
+
+
+@pytest.mark.django_db
+def test_domain_rule_case_insensitive_match(domain, redirect_rule_factory):
+    rule = redirect_rule_factory(path="test", domain=domain, case_sensitive=False)
+    result = get_domain_rule_or_404(domain, "/TEST")
+    assert result == rule
+
+
+@pytest.mark.django_db
+def test_domain_rule_no_match_raises_404(domain):
+    with pytest.raises(Http404):
+        get_domain_rule_or_404(domain, "nonexistent")
+
+
+@pytest.mark.parametrize("path", ["test/", "/test", "/test/"])
+@pytest.mark.django_db
+def test_domain_rule_or_404_ignores_leading_and_trailing_slashes(
+    path, domain, redirect_rule_factory
+):
+    expected_rule = redirect_rule_factory(path="test", domain=domain)
+    result = get_domain_rule_or_404(domain, path)
+    assert result == expected_rule
+
+
+@pytest.mark.django_db
+def test_find_wildcard_rule_exact_match(domain, redirect_rule_factory):
+    expected_rule = redirect_rule_factory(
+        path="/wildcard", domain=domain, match_subpaths=True
+    )
+    result = find_wildcard_rule(domain, "wildcard/path")
+    assert result == expected_rule
+
+
+@pytest.mark.django_db
+def test_find_wildcard_rule_no_match(domain, redirect_rule_factory):
+    redirect_rule_factory(path="/wildcard", domain=domain, match_subpaths=True)
+    result = find_wildcard_rule(domain, "no-match/path")
+    assert result is None
+
+
+@pytest.mark.django_db
+def test_find_wildcard_rule_case_insensitive_match(domain, redirect_rule_factory):
+    expected_rule = redirect_rule_factory(
+        path="/wildcard", domain=domain, match_subpaths=True
+    )
+    result = find_wildcard_rule(domain, "WILDCARD/path")
+    assert result == expected_rule
 
 
 @pytest.mark.parametrize("path", ["foo", "foo/bar", "foo/bar/baz"])
