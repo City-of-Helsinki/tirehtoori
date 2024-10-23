@@ -1,3 +1,5 @@
+import itertools
+
 import pytest
 from django.core.exceptions import ValidationError
 
@@ -85,6 +87,96 @@ class TestRedirectRule:
                 path=conflicting_path,
                 destination=self.DEFAULT_DESTINATION,
                 match_subpaths=True,
+            )
+
+    @pytest.mark.parametrize(
+        "existing_path, conflicting_path",
+        [("/foo", "/FOO/bar"), ("/FOO/bar", "/foo")],
+    )
+    def test_match_subpaths_conflict_on_create_case_insensitive(
+        self, domain, existing_path, conflicting_path
+    ):
+        RedirectRule.objects.create(
+            domain=domain,
+            path=existing_path,
+            destination=self.DEFAULT_DESTINATION,
+            match_subpaths=True,
+            case_sensitive=False,
+        )
+
+        with pytest.raises(ValidationError):
+            RedirectRule.objects.create(
+                domain=domain,
+                path=conflicting_path,
+                destination=self.DEFAULT_DESTINATION,
+                match_subpaths=True,
+                case_sensitive=False,
+            )
+
+    @pytest.mark.parametrize(
+        "existing_path, conflicting_path",
+        [("/FOO", "/FOO/bar"), ("/FOO/bar", "/FOO")],
+    )
+    def test_match_subpaths_conflict_on_create_case_sensitive(
+        self, domain, existing_path, conflicting_path
+    ):
+        RedirectRule.objects.create(
+            domain=domain,
+            path="/foo/bar",
+            destination=self.DEFAULT_DESTINATION,
+            match_subpaths=True,
+            case_sensitive=True,
+        )
+        # This should not conflict with the existing rule
+        RedirectRule.objects.create(
+            domain=domain,
+            path=existing_path,
+            destination=self.DEFAULT_DESTINATION,
+            match_subpaths=True,
+            case_sensitive=True,
+        )
+
+        with pytest.raises(ValidationError):
+            RedirectRule.objects.create(
+                domain=domain,
+                path=conflicting_path,
+                destination=self.DEFAULT_DESTINATION,
+                match_subpaths=True,
+                case_sensitive=True,
+            )
+
+    @pytest.mark.parametrize(
+        "existing_path, conflicting_path",
+        list(itertools.product(["/foo", "/FOO"], ["/foo/bar", "/FOO/bar"]))
+        + list(itertools.product(["/foo/bar", "/FOO/bar"], ["/foo", "/FOO"])),
+    )
+    @pytest.mark.parametrize(
+        "existing_case_sensitive, conflicting_case_sensitive",
+        [(True, False), (False, True)],
+    )
+    def test_match_subpaths_conflict_on_create_different_case_sensitivity(
+        self,
+        domain,
+        existing_path,
+        conflicting_path,
+        existing_case_sensitive,
+        conflicting_case_sensitive,
+    ):
+        RedirectRule.objects.create(
+            domain=domain,
+            path=existing_path,
+            destination=self.DEFAULT_DESTINATION,
+            match_subpaths=True,
+            case_sensitive=existing_case_sensitive,
+        )
+
+        with pytest.raises(ValidationError):
+            RedirectRule.objects.create(
+                domain=domain,
+                path=conflicting_path,
+                destination=self.DEFAULT_DESTINATION,
+                match_subpaths=True,
+                case_sensitive=conflicting_case_sensitive,
             )
 
     @pytest.mark.parametrize(

@@ -154,9 +154,13 @@ class RedirectRule(TimestampedModel):
                 # No conflicts with itself, e.g. when updating an existing rule
                 continue
 
-            if self.path.startswith(f"{rule.path}/") or rule.path.startswith(
-                f"{self.path}/"
-            ):
+            if self.case_sensitive and rule.case_sensitive:
+                a = self.path
+                b = rule.path
+            else:
+                a = self.path.lower()
+                b = rule.path.lower()
+            if a.startswith(f"{b}/") or b.startswith(f"{a}/"):
                 raise ValidationError(
                     f"Path {self.path} conflicts with existing rule {rule.path}"
                 )
