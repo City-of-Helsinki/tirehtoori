@@ -62,7 +62,7 @@ class TestRedirectRule:
         )
 
         # This shouldn't be fine
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             RedirectRule.objects.create(
                 domain=domain, path="/foo", destination=self.DEFAULT_DESTINATION
             )

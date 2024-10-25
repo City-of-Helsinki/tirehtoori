@@ -46,7 +46,7 @@ class ConfigProcessor:
         self.conf_file_path = conf_file_path
         self.server_conf = None
         if self.conf_file_path:
-            with open(self.conf_file_path, "r") as f:
+            with open(self.conf_file_path) as f:
                 self.server_conf = f.read().splitlines()
 
     def _get_block_from_server_conf(self, directive):
@@ -216,7 +216,8 @@ class ConfigProcessor:
             )
             return
 
-        assert parent_raw["directive"] == "location"
+        if parent_raw["directive"] != "location":
+            raise ParseError("Rewrite directive found outside location block")
 
         case_sensitive_arg = parent_raw["args"][0]
         if case_sensitive_arg in ["=", "^~"]:
@@ -249,7 +250,8 @@ class ConfigProcessor:
                 directive,
             )
             return
-        assert flag in ["redirect", "permanent"]
+        if flag not in ["redirect", "permanent"]:
+            raise ParseError(f"Invalid flag {flag} in rewrite directive")
 
         parsed_regex = self._parse_uri(regex)
         parsed_replacement = self._parse_uri(replacement)
@@ -288,7 +290,8 @@ class ConfigProcessor:
 
         # Not sure if there's a return for any other directive than location,
         # and not about to find out, either.
-        assert parent_raw["directive"] == "location"
+        if parent_raw["directive"] != "location":
+            raise ParseError("Return directive found outside location block")
 
         case_sensitive_arg = parent_raw["args"][0]
         if case_sensitive_arg in ["=", "^~"]:
@@ -319,7 +322,8 @@ class ConfigProcessor:
         parsed_uri = self._parse_uri(destination)
 
         # Sanity check, something is probably wrong if return ends with (.*)
-        assert parsed_uri["match_subpaths"] is False
+        if parsed_uri["match_subpaths"]:
+            raise ParseError("(.*) not allowed in destination URI")
 
         rule = {
             "case_sensitive": parent["case_sensitive"],
@@ -390,8 +394,8 @@ def find_server_blocks(server_conf):
 def process(file_path):
     filename = f'{"_".join(os.path.basename(file_path).split(".")[:-1])}_server.conf'
 
-    with open(file_path, "r") as f:
-        server_conf_from_yaml = yaml.load(f, yaml.Loader)["data"]["server.conf"]
+    with open(file_path) as f:
+        server_conf_from_yaml = yaml.safe_load(f)["data"]["server.conf"]
     server_conf_from_yaml = server_conf_from_yaml.replace("${DOLLAR}", "$")
 
     # crossplane parses only files, so we need to write the content to a file.
@@ -412,7 +416,8 @@ def process(file_path):
     output = []
     for server_block in server_blocks:
         # Sanity check
-        assert server_block["directive"] == "server"
+        if server_block["directive"] != "server":
+            raise ParseError("Server block not found")
         config_processor = ConfigProcessor(
             filename=filename, conf_file_path=conf_file_path
         )

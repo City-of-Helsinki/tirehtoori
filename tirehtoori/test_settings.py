@@ -1,4 +1,4 @@
-from .settings import *  # noqa
+from .settings import *  # noqa: F403
 
 ALLOWED_HOSTS = ["*"]
 ENABLE_REDIRECT_APP = True
