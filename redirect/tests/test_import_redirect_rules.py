@@ -31,19 +31,19 @@ def import_command():
 
 @pytest.fixture
 def simple_json():
-    with open(SIMPLE_JSON_PATH, "r") as f:
+    with open(SIMPLE_JSON_PATH) as f:
         return json.load(f)
 
 
 @pytest.fixture
 def missing_domain_names_json():
-    with open(MISSING_DOMAIN_NAMES_JSON_PATH, "r") as f:
+    with open(MISSING_DOMAIN_NAMES_JSON_PATH) as f:
         return json.load(f)
 
 
 @pytest.fixture
 def all_args_multiple_domains_json():
-    with open(ALL_ARGS_MULTIPLE_DOMAINS_JSON_PATH, "r") as f:
+    with open(ALL_ARGS_MULTIPLE_DOMAINS_JSON_PATH) as f:
         return json.load(f)
 
 

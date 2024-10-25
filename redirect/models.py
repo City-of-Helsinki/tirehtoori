@@ -108,6 +108,25 @@ class RedirectRule(TimestampedModel):
             )
         ]
 
+    def __str__(self):
+        return f"{self.domain.display_name}/{self.path} -> {self.destination}"
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        return super().save(*args, **kwargs)
+
+    def clean(self):
+        # Normalize path.
+        self.path = self.path.strip().strip("/")
+
+        if self.case_sensitive:
+            self._validate_case_sensitive_path()
+        else:
+            self._validate_case_insensitive_path()
+
+        if self.match_subpaths:
+            self._validate_match_subpaths()
+
     def _validate_case_sensitive_path(self):
         """
         Check for case-sensitive conflicts with existing rules.
@@ -164,22 +183,3 @@ class RedirectRule(TimestampedModel):
                 raise ValidationError(
                     f"Path {self.path} conflicts with existing rule {rule.path}"
                 )
-
-    def clean(self):
-        # Normalize path.
-        self.path = self.path.strip().strip("/")
-
-        if self.case_sensitive:
-            self._validate_case_sensitive_path()
-        else:
-            self._validate_case_insensitive_path()
-
-        if self.match_subpaths:
-            self._validate_match_subpaths()
-
-    def save(self, *args, **kwargs):
-        self.clean()
-        return super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"{self.domain.display_name}/{self.path} -> {self.destination}"

@@ -23,11 +23,11 @@ class ImporterError(Exception):
     pass
 
 
-class DryRunException(Exception):
+class DryRunException(Exception):  # noqa: N818
     pass
 
 
-class SkipIteration(Exception):
+class SkipIteration(Exception):  # noqa: N818
     """Used for flow control in nested loops"""
 
 
@@ -47,7 +47,7 @@ class Command(BaseCommand):
 
     def __init__(self):
         super().__init__()
-        self.force: bool = NOT_SET  # noqa
+        self.force: bool = NOT_SET
         self.collected_errors = []
         self.rule_import_stats = Stats()
         self.domain_import_stats = Stats()
@@ -104,17 +104,17 @@ class Command(BaseCommand):
                 f"Rule for {rule['path']} already exists for domain {domain}"
             )
 
-        create_kwargs = dict(
-            domain=domain,
-            path=rule["path"],
-            destination=rule["destination"],
-            permanent=rule.get("permanent"),
-            case_sensitive=rule.get("case_sensitive"),
-            pass_query_string=rule.get("pass_query_string"),
-            match_subpaths=rule.get("match_subpaths"),
-            append_subpath=rule.get("append_subpath"),
-            notes=rule.get("notes", ""),
-        )
+        create_kwargs = {
+            "domain": domain,
+            "path": rule["path"],
+            "destination": rule["destination"],
+            "permanent": rule.get("permanent"),
+            "case_sensitive": rule.get("case_sensitive"),
+            "pass_query_string": rule.get("pass_query_string"),
+            "match_subpaths": rule.get("match_subpaths"),
+            "append_subpath": rule.get("append_subpath"),
+            "notes": rule.get("notes", ""),
+        }
         create_kwargs["notes"] = self._prepend_timestamp_note(create_kwargs["notes"])
         create_kwargs = {k: v for k, v in create_kwargs.items() if v is not None}
 
@@ -181,7 +181,7 @@ class Command(BaseCommand):
             self._warning("Running in dry-run mode")
 
         json_file = kwargs["json_file"]
-        with open(json_file, "r") as file:
+        with open(json_file) as file:
             data = json.load(file)
 
         self.domain_import_stats.total = len(data)
