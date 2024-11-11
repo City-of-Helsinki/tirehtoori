@@ -51,6 +51,9 @@ class RedirectRuleAdmin(admin.ModelAdmin):
                     "domain",
                     "permanent",
                     "case_sensitive",
+                    "pass_query_string",
+                    "match_subpaths",
+                    "append_subpath",
                 )
             },
         ),
