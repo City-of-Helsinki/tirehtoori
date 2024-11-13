@@ -15,6 +15,7 @@ from pathlib import Path
 import environ
 
 env = environ.Env(
+    ADMIN_URL=(str, "admin"),
     ALLOWED_HOSTS=(list, []),
     DATABASE_URL=(str, "postgres:///tirehtoori-db"),
     DATABASE_PASSWORD=(str, ""),
@@ -162,6 +163,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Enable Django Admin site
 ENABLE_ADMIN_APP = env("ENABLE_ADMIN_APP")
+ADMIN_URL = env("ADMIN_URL")
 
 # Enable API
 ENABLE_REDIRECT_APP = env("ENABLE_REDIRECT_APP")

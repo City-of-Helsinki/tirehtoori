@@ -17,14 +17,23 @@ Including another URLconf
 
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 
 from .api import api
 
 urlpatterns = []
 
 if settings.ENABLE_ADMIN_APP:
-    urlpatterns.append(path("admin/", admin.site.urls))
+    urlpatterns.append(path(f"{settings.ADMIN_URL}/", admin.site.urls))
 
 if settings.ENABLE_REDIRECT_APP:
-    urlpatterns.append(path("", api.urls))
+    if settings.ENABLE_ADMIN_APP:
+        # NOTE: Django uses a cache for url resolving. If any other, non-system url is
+        # requested before admin, the cache will be populated with the catch-all
+        # redirect url, causing all admin urls to be resolved to the catch-all
+        # redirect view. Using a negative lookahead assertion to exclude admin urls
+        # fixes this issue.
+        # Keep this in mind if you need to add any other "reserved" urls.
+        urlpatterns.append(re_path(rf"^(?!{settings.ADMIN_URL})", api.urls))
+    else:
+        urlpatterns.append(path("", api.urls))
