@@ -3,6 +3,7 @@
 # Future versions might break the code (or replace it with a built-in solution).
 factory_boy==3.3.1
 pytest
+pytest-cov
 pytest-django
 pytest-factoryboy
 ruff
