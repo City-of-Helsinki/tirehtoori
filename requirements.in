@@ -1,4 +1,4 @@
 django~=5.1
 django-environ
 django-ninja
-psycopg2
+psycopg[c]
