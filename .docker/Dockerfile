@@ -1,36 +1,41 @@
+# Used by Azure Devops to pull from internal registry
+ARG BUILDER_REGISTRY=registry.access.redhat.com
 # ==============================
-FROM python:3.11 AS appbase
+FROM ${BUILDER_REGISTRY}/ubi9/python-311:latest AS appbase
 # ==============================
+
+USER root
+WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-WORKDIR /app
+COPY --chown=default:root requirements*.txt .
 
-RUN useradd -Ums /bin/bash -d /appuser appuser
-
-COPY --chown=appuser:appuser requirements.txt .
-
-RUN  apt-get update && apt-get install -y \
+RUN dnf update -y && dnf install -y \
+    nmap-ncat \
     gettext \
     && pip install -U pip setuptools wheel \
-    && pip install --no-cache-dir -r requirements.txt
+    && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir -r requirements-prod.txt \
+    && dnf clean all
 
 ENTRYPOINT ["/app/.docker/docker-entrypoint.sh"]
+EXPOSE 8000/tcp
 
 # ==============================
 FROM appbase AS development
 # ==============================
 
-COPY --chown=appuser:appuser requirements-dev.txt .
+COPY --chown=default:root requirements-dev.txt .
 RUN pip install --no-cache-dir -r requirements-dev.txt
 
 ENV DEV_SERVER=True
 
-COPY --chown=appuser:appuser . .
+COPY --chown=default:root . .
 
-USER appuser
-EXPOSE 8000/tcp
+USER root
+#USER default
 
 # ==============================
 FROM appbase AS staticbuilder
@@ -49,4 +54,3 @@ COPY --from=staticbuilder /app/static /app/static
 COPY . .
 
 USER default
-EXPOSE 8000/tcp
