@@ -41,16 +41,16 @@ USER root
 FROM appbase AS staticbuilder
 # ==============================
 
-ENV VAR_ROOT=/app
-COPY . /app
-RUN SECRET_KEY="only-used-for-collectstatic"  \
+ENV STATIC_ROOT=/app/static
+COPY --chown=default:root . .
+RUN SECRET_KEY="only-used-for-collectstatic" ENABLE_ADMIN_APP="True"  \
     python manage.py collectstatic --noinput
 
 # ==============================
 FROM appbase AS production
 # ==============================
 
-COPY --from=staticbuilder /app/static /app/static
-COPY . .
+COPY --from=staticbuilder --chown=default:root /app/static /app/static
+COPY --chown=default:root . .
 
 USER default
