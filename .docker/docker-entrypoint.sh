@@ -23,5 +23,7 @@ if [[ -n "$*" ]]; then
 elif [[ "$DEV_SERVER" = "True" ]]; then
     python -Wd ./manage.py runserver 0.0.0.0:8000
 else
-    uwsgi --ini /app/.docker/uwsgi_configuration.ini
+    export UWSGI_THREADS=${UWSGI_THREADS:-1}
+    export UWSGI_PROCESSES=${UWSGI_PROCESSES:-12}
+    uwsgi --ini /app/.docker/uwsgi.ini
 fi
