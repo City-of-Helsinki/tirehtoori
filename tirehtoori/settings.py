@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
+from datetime import datetime
 from pathlib import Path
 
 import environ
@@ -29,6 +31,7 @@ env = environ.Env(
     DEBUG=(bool, False),
     ENABLE_REDIRECT_APP=(bool, False),
     ENABLE_ADMIN_APP=(bool, False),
+    OPENSHIFT_BUILD_COMMIT=(str, ""),
     SECRET_KEY=(str, ""),
     SENTRY_DSN=(str, ""),
     SENTRY_ENVIRONMENT=(str, "development"),
@@ -172,3 +175,7 @@ ADMIN_URL = env("ADMIN_URL")
 
 # Enable API
 ENABLE_REDIRECT_APP = env("ENABLE_REDIRECT_APP")
+
+# get build time from a file in docker image
+APP_BUILD_TIME = datetime.fromtimestamp(os.path.getmtime(__file__))
+COMMIT_HASH = env.str("OPENSHIFT_BUILD_COMMIT", "")

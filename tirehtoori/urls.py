@@ -17,7 +17,11 @@ Including another URLconf
 
 from django.conf import settings
 from django.contrib import admin
+from django.http import HttpResponse, JsonResponse
 from django.urls import path, re_path
+from django.views.decorators.http import require_GET
+
+from tirehtoori import __version__
 
 from .api import api
 
@@ -37,3 +41,25 @@ if settings.ENABLE_REDIRECT_APP:
         urlpatterns.append(re_path(rf"^(?!{settings.ADMIN_URL})", api.urls))
     else:
         urlpatterns.append(path("", api.urls))
+
+
+#
+# Kubernetes liveness & readiness probes
+#
+@require_GET
+def healthz(*args, **kwargs):
+    return HttpResponse(status=200)
+
+
+@require_GET
+def readiness(*args, **kwargs):
+    response_json = {
+        "status": "ok",
+        "packageVersion": __version__,
+        "commitHash": settings.COMMIT_HASH,
+        "buildTime": settings.APP_BUILD_TIME.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+    }
+    return JsonResponse(response_json, status=200)
+
+
+urlpatterns = [path("__healthz", healthz), path("__readiness", readiness)] + urlpatterns
