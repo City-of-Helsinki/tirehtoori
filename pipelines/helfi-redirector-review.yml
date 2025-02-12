@@ -28,7 +28,7 @@ pr:
     - '.github/'
     - 'pipelines/helfi-redirector-release.yml'
     - 'pipelines/helfi-redirector-dev.yml'
-    - 'docker-compose*'
+    - 'compose*'
 
 # By default, use self-hosted agents
 pool: Default
