@@ -28,3 +28,8 @@ repos:
     rev: v0.10.0
     hooks:
       - id: shellcheck
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.21.0
+    hooks:
+      - id: pyupgrade
+        args: ["--py312-plus"]
