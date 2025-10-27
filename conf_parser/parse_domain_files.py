@@ -392,7 +392,7 @@ def find_server_blocks(server_conf):
 
 
 def process(file_path):
-    filename = f'{"_".join(os.path.basename(file_path).split(".")[:-1])}_server.conf'
+    filename = f"{'_'.join(os.path.basename(file_path).split('.')[:-1])}_server.conf"
 
     with open(file_path) as f:
         server_conf_from_yaml = yaml.safe_load(f)["data"]["server.conf"]
