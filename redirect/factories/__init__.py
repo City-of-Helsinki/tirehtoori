@@ -28,11 +28,12 @@ class DomainNameFactory(factory.django.DjangoModelFactory):
 class DomainFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Domain
+        skip_postgeneration_save = True
 
     display_name = UniqueFaker("domain_name")
 
     @factory.post_generation
-    def names(self, create, extracted, **__):
+    def names(obj, create, extracted, **__):  # noqa: N805
         if not create:
             return
 
@@ -42,10 +43,11 @@ class DomainFactory(factory.django.DjangoModelFactory):
             if isinstance(extracted, str):
                 extracted = [extracted]
             for name in extracted:
-                DomainNameFactory(domain=self, name=name)
+                DomainNameFactory(domain=obj, name=name)
         else:
             # Create a default domain name
-            DomainNameFactory(domain=self)
+            DomainNameFactory(domain=obj)
+        obj.save()
 
 
 @register
