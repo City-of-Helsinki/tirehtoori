@@ -11,6 +11,18 @@ repos:
       - id: check-yaml
       - id: check-toml
       - id: check-added-large-files
+  # Run pyupgrade and django-upgrade before ruff, as these two might alter
+  # the code in a way that requires reformatting.
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.21.0
+    hooks:
+      - id: pyupgrade
+        args: ["--py312-plus"]
+  - repo: https://github.com/adamchainz/django-upgrade
+    rev: "1.29.1"
+    hooks:
+      - id: django-upgrade
+        args: [--target-version, "5.2"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.2
     hooks:
@@ -28,13 +40,3 @@ repos:
     rev: v0.11.0
     hooks:
       - id: shellcheck
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.21.0
-    hooks:
-      - id: pyupgrade
-        args: ["--py312-plus"]
-  - repo: https://github.com/adamchainz/django-upgrade
-    rev: "1.29.1"
-    hooks:
-      - id: django-upgrade
-        args: [--target-version, "5.2"]
