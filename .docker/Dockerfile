@@ -16,6 +16,9 @@ RUN dnf update -y && dnf install -y \
     && pip install -U pip setuptools wheel \
     && pip install --no-cache-dir -r requirements.txt \
     && pip install --no-cache-dir -r requirements-prod.txt \
+    && mkdir -p /usr/local/lib/uwsgi/plugins \
+    && uwsgi --build-plugin https://github.com/City-of-Helsinki/uwsgi-sentry \
+    && mv sentry_plugin.so /usr/local/lib/uwsgi/plugins/ \
     && dnf clean all
 
 ENTRYPOINT ["/app/.docker/docker-entrypoint.sh"]
