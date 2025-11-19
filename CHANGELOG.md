@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.0](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.1.3...tirehtoori-v0.2.0) (2025-11-19)
+
+
+### Features
+
+* Add sentry logging for uWSGI ([209dd07](https://github.com/City-of-Helsinki/tirehtoori/commit/209dd0701a05f542a049a196d4e90edbcc6d06dd))
+* **sentry:** Update sentry configuration ([6f00c74](https://github.com/City-of-Helsinki/tirehtoori/commit/6f00c749ece767503f823457ff3d5922b5e51ec8))
+
+
+### Dependencies
+
+* Add sentry-sdk and django-cors-headers ([a68d374](https://github.com/City-of-Helsinki/tirehtoori/commit/a68d37499900d3f9c0e76eb5d60adf5456ac5da7))
+
 ## [0.1.3](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.1.2...tirehtoori-v0.1.3) (2025-11-10)
 
 
