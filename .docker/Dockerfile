@@ -36,7 +36,6 @@ ENV DEV_SERVER=True
 COPY --chown=default:root . .
 
 USER root
-#USER default
 
 # ==============================
 FROM appbase AS staticbuilder
