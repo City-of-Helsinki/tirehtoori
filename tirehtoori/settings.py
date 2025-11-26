@@ -42,7 +42,7 @@ env = environ.Env(
     SENTRY_PROFILE_SESSION_SAMPLE_RATE=(float, None),
     SENTRY_RELEASE=(str, None),
     SENTRY_TRACES_SAMPLE_RATE=(float, None),
-    SENTRY_TRACES_IGNORE_PATHS=(list, ["/healthz", "/readiness"]),
+    SENTRY_TRACES_IGNORE_PATHS=(list, ["/__healthz", "/__readiness"]),
     STATIC_URL=(str, "__static/"),
     STATIC_ROOT=(environ.Path(), BASE_DIR / "static"),
 )
