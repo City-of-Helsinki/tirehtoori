@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.2.0...tirehtoori-v0.2.1) (2025-11-26)
+
+
+### Bug Fixes
+
+* **sentry:** Fix healthz and readiness ignoring ([a5df54c](https://github.com/City-of-Helsinki/tirehtoori/commit/a5df54c8a1487a1fd01ac82756e47bb6d6ae6dd7))
+
 ## [0.2.0](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.1.3...tirehtoori-v0.2.0) (2025-11-19)
 
 
