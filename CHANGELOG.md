@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.2.1...tirehtoori-v0.2.2) (2025-12-04)
+
+
+### Dependencies
+
+* Update packages ([f3cda9a](https://github.com/City-of-Helsinki/tirehtoori/commit/f3cda9a871474fc4a121a7d61273e7511c412bad))
+
 ## [0.2.1](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.2.0...tirehtoori-v0.2.1) (2025-11-26)
 
 
