@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.2.2...tirehtoori-v0.2.3) (2026-01-04)
+
+
+### Dependencies
+
+* Bump urllib3 from 2.5.0 to 2.6.0 ([b5c76e4](https://github.com/City-of-Helsinki/tirehtoori/commit/b5c76e43d1e06d6950abe3aa6f94899fcb16ed76))
+
 ## [0.2.2](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.2.1...tirehtoori-v0.2.2) (2025-12-04)
 
 
