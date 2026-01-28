@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.2.3...tirehtoori-v0.2.4) (2026-01-28)
+
+
+### Dependencies
+
+* Bump wheel from 0.45.1 to 0.46.2 ([9d7986a](https://github.com/City-of-Helsinki/tirehtoori/commit/9d7986aa7fca30dee5001feba8046a309d6fdc38))
+
 ## [0.2.3](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.2.2...tirehtoori-v0.2.3) (2026-01-08)
 
 
