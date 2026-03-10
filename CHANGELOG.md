@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.6](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.2.5...tirehtoori-v0.2.6) (2026-03-10)
+
+
+### Dependencies
+
+* Bump django from 5.2.11 to 5.2.12 ([cb26d2b](https://github.com/City-of-Helsinki/tirehtoori/commit/cb26d2b2830faac5d68ab34d296170b4440bae6f))
+
 ## [0.2.5](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.2.4...tirehtoori-v0.2.5) (2026-02-05)
 
 
