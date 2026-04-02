@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.7](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.2.6...tirehtoori-v0.2.7) (2026-04-02)
+
+
+### Dependencies
+
+* Bump pygments from 2.19.2 to 2.20.0 ([b7942f5](https://github.com/City-of-Helsinki/tirehtoori/commit/b7942f52b45e129bc7f8acd8ec9819793c0c1b63))
+
 ## [0.2.6](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.2.5...tirehtoori-v0.2.6) (2026-03-10)
 
 
