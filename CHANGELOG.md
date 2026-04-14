@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.8](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.2.7...tirehtoori-v0.2.8) (2026-04-14)
+
+
+### Dependencies
+
+* Bump django from 5.2.12 to 5.2.13 ([3b3331a](https://github.com/City-of-Helsinki/tirehtoori/commit/3b3331a796bf0da71c7a6fc56e663874f1a113d9))
+* Bump pytest from 9.0.1 to 9.0.3 ([bdced05](https://github.com/City-of-Helsinki/tirehtoori/commit/bdced054d7a72eb7d981bdf49ff7269fef196c8c))
+
 ## [0.2.7](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.2.6...tirehtoori-v0.2.7) (2026-04-02)
 
 
