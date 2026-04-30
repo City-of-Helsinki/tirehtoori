@@ -18,7 +18,7 @@ RUN dnf update -y \
     && dnf install -y \
     nmap-ncat \
     gettext \
-    && pip install -U pip setuptools wheel \
+    && pip install --only-binary :all: -U pip setuptools wheel \
     && pip install --require-hashes --no-deps --no-cache-dir -r requirements.txt \
     && pip install --require-hashes --no-deps --no-cache-dir -r requirements-prod.txt \
     && dnf clean all
