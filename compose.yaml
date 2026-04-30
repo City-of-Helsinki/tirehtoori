@@ -26,6 +26,20 @@ services:
       - postgres
     container_name: tirehtoori-backend
 
+  uwsgi:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+      target: production
+    env_file:
+      - .docker/.env
+    ports:
+      - "8080:8000"
+    depends_on:
+      - postgres
+    container_name: tirehtoori-uwsgi
+    profiles: ["uwsgi"]
+
 volumes:
   tirehtoori-postgres-data-volume:
 
