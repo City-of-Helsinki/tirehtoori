@@ -48,7 +48,7 @@ def all_args_multiple_domains_json():
 
 
 @pytest.mark.django_db
-class IntegrationTest:
+class TestIntegration:
     def test_with_simple_json(self, simple_json):
         call_command("import_redirect_rules", SIMPLE_JSON_PATH)
 
@@ -91,6 +91,53 @@ class IntegrationTest:
         assert Domain.objects.count() == 0
         assert DomainName.objects.count() == 0
         assert RedirectRule.objects.count() == 0
+
+    def test_with_missing_domain_names_json_force(self):
+        out = StringIO()
+        call_command(
+            "import_redirect_rules",
+            MISSING_DOMAIN_NAMES_JSON_PATH,
+            "--force",
+            stdout=out,
+        )
+
+        assert Domain.objects.count() == 2
+        assert DomainName.objects.count() == 2
+        assert RedirectRule.objects.count() == 2
+        assert "Continuing due to --force" in out.getvalue()
+        assert "No domain names provided for item at index 2" in out.getvalue()
+        assert "1 failed to import" in out.getvalue()
+        assert "1 skipped" in out.getvalue()
+
+    def test_with_duplicate_rule_force(self, tmp_path):
+        data = [
+            {
+                "domain_names": ["duplicate-rule.test"],
+                "rules": [
+                    {
+                        "path": "/same",
+                        "destination": "https://redirect.test/first",
+                    },
+                    {
+                        "path": "/same/",
+                        "destination": "https://redirect.test/second",
+                    },
+                ],
+            }
+        ]
+        json_path = tmp_path / "duplicate-rule.json"
+        json_path.write_text(json.dumps(data), encoding="utf-8")
+        out = StringIO()
+
+        call_command("import_redirect_rules", str(json_path), "--force", stdout=out)
+
+        assert Domain.objects.count() == 1
+        assert RedirectRule.objects.count() == 1
+        rule = RedirectRule.objects.get()
+        assert rule.path == "same"
+        assert rule.destination == "https://redirect.test/first"
+        assert "Rule for /same/ already exists" in out.getvalue()
+        assert "1 failed to import" in out.getvalue()
 
     def test_with_all_args_multiple_domains_json(self, all_args_multiple_domains_json):
         call_command("import_redirect_rules", ALL_ARGS_MULTIPLE_DOMAINS_JSON_PATH)
