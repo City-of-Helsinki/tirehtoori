@@ -42,7 +42,8 @@ ENTRYPOINT ["/app/.docker/docker-entrypoint.sh"]
 FROM appbase AS development
 # ==============================
 COPY requirements-dev.txt .
-RUN pip install --require-hashes --no-deps --no-cache-dir -r requirements-dev.txt
+COPY conf_parser/requirements.txt ./conf_parser/requirements.txt
+RUN pip install --require-hashes --no-deps --no-cache-dir -r requirements-dev.txt -r conf_parser/requirements.txt
 
 ENV DEV_SERVER=True
 ENV PIP_TOOLS_CACHE_DIR="/tmp/pip-tools-cache"
