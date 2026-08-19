@@ -138,17 +138,18 @@ class ConfigProcessor:
                 elif segment.endswith("(.*)"):
                     match_subpaths = True
                     segment = segment.removesuffix("(.*)")
-                elif segment.endswith("$args"):
-                    pass_query_string = True
-                    segment = segment.removesuffix("$args")
                 elif segment.endswith("$is_args$args"):
                     pass_query_string = True
                     segment = segment.removesuffix("$is_args$args")
+                elif segment.endswith("$args"):
+                    pass_query_string = True
+                    segment = segment.removesuffix("$args")
 
                 suffix_only_terms = [
                     r"\(\.\*\)",
                     r"\$args",
-                    r"\$is_args\$args" r"\$\d+",
+                    r"\$is_args\$args",
+                    r"\$\d+",
                 ]
                 # Any allowed suffixes should be removed by now, so if any of these
                 # are found, it's an error.
