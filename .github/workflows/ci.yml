@@ -18,3 +18,4 @@ jobs:
       extra-commands: |
         echo "ENABLE_ADMIN_APP=true" >> $GITHUB_ENV
         echo "ENABLE_REDIRECT_APP=true" >> $GITHUB_ENV
+        pip install -r conf_parser/requirements.txt
