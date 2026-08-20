@@ -192,10 +192,11 @@ def test_process_server_name_and_ignore_unknown_directives():
 def test_process_location_sets_case_sensitivity(args, case_sensitive):
     processor = ConfigProcessor()
 
-    processor.process_directive(make_location(args))
+    processor.process_directive(
+        make_location(args, [make_return(["301", "https://bar.test"])])
+    )
 
-    assert processor.rules == []
-    assert processor.warnings == []
+    assert processor.rules[0]["case_sensitive"] is case_sensitive
 
 
 def test_process_location_and_return_include_source_notes(tmp_path):
