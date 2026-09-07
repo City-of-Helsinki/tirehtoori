@@ -18,6 +18,13 @@
         {"type": "test", "section": "Tests", "hidden": true},
         {"type": "build", "section": "Build System", "hidden": true},
         {"type": "ci", "section": "Continuous Integration", "hidden": true}
+      ],
+      "extra-files": [
+        {
+          "path": "uv.lock",
+          "type": "toml",
+          "jsonpath": "$.package[?(@.name.value=='tirehtoori')].version"
+        }
       ]
     }
   },
