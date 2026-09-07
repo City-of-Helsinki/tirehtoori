@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.3.0](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.2.8...tirehtoori-v0.3.0) (2026-09-07)
+
+
+### Features
+
+* Update Dockerfile, use common uwsgi config ([2127307](https://github.com/City-of-Helsinki/tirehtoori/commit/2127307cae1c5993fe60da7e6ea0f85404fbb89b))
+
+
+### Dependencies
+
+* Bump django from 5.2.13 to 5.2.14 ([4c1014a](https://github.com/City-of-Helsinki/tirehtoori/commit/4c1014a006975e5072329343059763548ab228a3))
+* Bump django from 5.2.14 to 5.2.15 ([4dcee08](https://github.com/City-of-Helsinki/tirehtoori/commit/4dcee084afd6f8d0bbc94cf127a623ce234205ef))
+* Bump django from 5.2.15 to 5.2.16 ([5f3094f](https://github.com/City-of-Helsinki/tirehtoori/commit/5f3094f3c39c32569680f896d83c0e036b8b8e50))
+* Bump django to latest 5.2.17 ([a549cb6](https://github.com/City-of-Helsinki/tirehtoori/commit/a549cb60662a83e974f3e9dd386e71f809799311))
+* Bump pip from 26.0 to 26.1 ([66f40fd](https://github.com/City-of-Helsinki/tirehtoori/commit/66f40fd0f6f969d3eda13a33506a3b2a5bbc206a))
+* Bump pip from 26.1 to 26.1.2 ([5b3c97c](https://github.com/City-of-Helsinki/tirehtoori/commit/5b3c97ce2954f42ededb85f3f7c77c116b83e60b))
+* Bump pip from 26.1.2 to 26.2 ([38b3a29](https://github.com/City-of-Helsinki/tirehtoori/commit/38b3a2914423c4ea2a087c1893f5bb92a0e86c4b))
+* Bump setuptools from 80.9.0 to 83.0.0 ([e2206be](https://github.com/City-of-Helsinki/tirehtoori/commit/e2206bee7ca2078a1a7cc816518317db9bf0a1d0))
+* Bump sqlparse from 0.5.4 to 0.6.0 ([edff7d5](https://github.com/City-of-Helsinki/tirehtoori/commit/edff7d518a83fbcd2afb8fb2d6239194eba2e16a))
+* Bump urllib3 from 2.6.3 to 2.7.0 ([b902d19](https://github.com/City-of-Helsinki/tirehtoori/commit/b902d19d65c541ded557a3490dd10ce724ff82d0))
+
 ## [0.2.8](https://github.com/City-of-Helsinki/tirehtoori/compare/tirehtoori-v0.2.7...tirehtoori-v0.2.8) (2026-04-14)
 
 
