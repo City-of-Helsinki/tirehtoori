@@ -1,0 +1,13 @@
+.git
+.github
+.idea
+.ruff_cache
+.venv
+**/__pycache__
+**/*.pyc
+*.sqlite3
+.pytest_cache
+.coverage
+coverage.xml
+htmlcov
+!uv.lock

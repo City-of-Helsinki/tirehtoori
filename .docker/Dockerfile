@@ -5,22 +5,31 @@ FROM registry.access.redhat.com/ubi9/python-312 AS appbase
 # Branch or tag used to pull python-uwsgi-common.
 ARG UWSGI_COMMON_REF="main"
 
+# Install uv, see https://docs.astral.sh/uv/guides/integration/docker/#installing-uv
+COPY --from=ghcr.io/astral-sh/uv:0.12.10@sha256:2bb3ebca0a796a155094a27773d290c4b074572e6107f171d88d086682fd2500 /uv /uvx /usr/local/bin/
+
 USER root
 WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-COPY requirements.txt .
-COPY requirements-prod.txt .
+ENV UV_PROJECT_ENVIRONMENT=/opt/app-root \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_NO_CACHE=1 \
+    UV_PYTHON_DOWNLOADS=never
+
+# Make the virtualenv binaries available on PATH
+ENV PATH="/opt/app-root/bin:$PATH"
+
+COPY pyproject.toml uv.lock ./
 
 RUN dnf update -y \
     && dnf install -y \
     nmap-ncat \
     gettext \
-    && pip install --only-binary :all: -U pip setuptools wheel \
-    && pip install --require-hashes --no-deps --no-cache-dir -r requirements.txt \
-    && pip install --require-hashes --no-deps --no-cache-dir -r requirements-prod.txt \
+    && uv sync --locked --no-dev --group prod --no-install-project \
     && dnf clean all
 
 # Build and copy specific python-uwsgi-common files.
@@ -41,12 +50,10 @@ ENTRYPOINT ["/app/.docker/docker-entrypoint.sh"]
 # ==============================
 FROM appbase AS development
 # ==============================
-COPY requirements-dev.txt .
-COPY conf_parser/requirements.txt ./conf_parser/requirements.txt
-RUN pip install --require-hashes --no-deps --no-cache-dir -r requirements-dev.txt -r conf_parser/requirements.txt
+
+RUN uv sync --locked --group dev --group conf-parser --group prod --no-install-project
 
 ENV DEV_SERVER=True
-ENV PIP_TOOLS_CACHE_DIR="/tmp/pip-tools-cache"
 
 RUN groupadd -g 1000 appuser \
     && useradd -u 1000 -g appuser -ms /bin/bash appuser \
