@@ -9,7 +9,7 @@ on:
 
 jobs:
   common:
-    uses: City-of-Helsinki/.github/.github/workflows/ci-django-api.yml@main
+    uses: City-of-Helsinki/.github/.github/workflows/ci-uv-django-api.yml@main
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     with:
@@ -18,4 +18,4 @@ jobs:
       extra-commands: |
         echo "ENABLE_ADMIN_APP=true" >> $GITHUB_ENV
         echo "ENABLE_REDIRECT_APP=true" >> $GITHUB_ENV
-        pip install -r conf_parser/requirements.txt
+        uv sync --frozen --group conf-parser
