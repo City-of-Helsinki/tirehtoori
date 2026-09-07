@@ -1,3 +1,40 @@
+[project]
+name = "tirehtoori"
+requires-python = ">=3.12, <3.13"
+version = "0.2.8"
+dependencies = [
+    "django~=5.2",
+    "django-cors-headers",
+    "django-environ",
+    "django-ninja",
+    "psycopg[c]",
+    "sentry-sdk[django]",
+]
+
+[dependency-groups]
+dev = [
+    # NOTE: factory_boy version pinned because redirect.factories.UniqueFaker uses factory_boy internals.
+    # Future versions might break the code (or replace it with a built-in solution).
+    "factory_boy==3.3.1",
+    "ipython",
+    "pytest",
+    "pytest-cov",
+    "pytest-django",
+    "pytest-factoryboy",
+]
+# Dependencies for the standalone conf_parser one-off script (see conf_parser/README.md).
+conf-parser = [
+    "crossplane==0.5.8",
+    "pyyaml==6.0.2",
+]
+prod = [
+    "uwsgi",
+]
+
+[tool.uv]
+package = false
+exclude-newer = "P3D"
+
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "tirehtoori.tests.test_settings"
 
@@ -39,8 +76,3 @@ select = [
     "I001"
 ]
 extend-per-file-ignores = { "*/migrations/*" = ["E501"], "*/tests/*" = ["E501", "S101"] }
-
-[tool.pip-tools.compile]
-strip-extras = true
-allow-unsafe = true
-generate-hashes = true
