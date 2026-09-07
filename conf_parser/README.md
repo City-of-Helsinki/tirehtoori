@@ -2,10 +2,12 @@ A one-off parser for parsing nginx redirect rules from Azure configuration files
 Tirehtööri-friendly JSON format.
 
 ## Usage
-1. Install dependencies: `pip install -r requirements.txt`
+1. Install dependencies: dependencies (`crossplane`, `PyYAML`) are defined in the project's
+   `conf-parser` dependency group in the repository root `pyproject.toml`; run
+   `uv sync --group conf-parser` from the repository root
 2. Copy the YAML files to parse under the directory pointed  in `DOMAINS_DIR` (default: `./.temp/domains`)
 3. Change any other settings in `parse_domain_files.py` if needed
-4. Run the script: `python parse_domain_files.py`
+4. Run the script (from within the `conf_parser` directory): `uv run python parse_domain_files.py`
 5. The output will be saved to `./.temp/results.json` by default
 
 A sample file is provided (`sample_conf.yml`).

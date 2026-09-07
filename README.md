@@ -101,9 +101,36 @@ The JSON file should have the following structure:
 
 ## 🧪 Testing
 
+Some required settings (e.g. `SECRET_KEY`, `ENABLE_ADMIN_APP`, `ENABLE_REDIRECT_APP`) must be
+set as environment variables before running the tests, e.g.:
+```bash
+export SECRET_KEY=dev-secret-key
+export ENABLE_ADMIN_APP=True
+export ENABLE_REDIRECT_APP=True
+```
+
+Note: `conf_parser`'s tests require its dependencies, which live in a separate `conf-parser`
+dependency group (since `conf_parser` is a standalone one-off script, see
+[`conf_parser/README.md`](conf_parser/README.md)). Install them with:
+```bash
+uv sync --group conf-parser
+```
+
 Run the tests using pytest:
 ```bash
-pytest
+uv run pytest
+```
+
+## 🧹 Code quality
+
+This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formatting, and
+[pre-commit](https://pre-commit.com/) to run it (along with other checks) automatically on
+every commit. See [`.pre-commit-config.yaml`](.pre-commit-config.yaml) for the configured hooks.
+
+Ruff is not part of the project's dependencies. If you want to run it manually outside of the
+pre-commit hooks, install it separately, e.g.:
+```bash
+uv tool install ruff
 ```
 
 ## 📄 License
